@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 	char *scheme;
 	size_t schemesize;
 
-	fp = fopen(argv[0], "rb");
+	fp = fopen("/proc/self/exe", "rb");
 	fread(&ehdr, sizeof ehdr, 1, fp);
 	s_names = read_section_header_names(fp, ehdr);
 	bootsize = extract_elf_section(fp, ehdr.e_shnum, ehdr.e_shoff, s_names, bootname, &boot);
