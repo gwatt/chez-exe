@@ -3,4 +3,14 @@ ChezScheme Self-Hosting Executable
 The goal of this project is to produce executables that are a complete
 ChezScheme system and contain a scheme program.
 This is to work by embedding the ChezScheme boot files and a scheme program
-into the ELF sections.
+into ELF sections of a binary
+
+BUILDING
+
+You must download and build ChezScheme (https://github.com/cisco/ChezScheme)
+before you can build this project. Once you have done that, you can build
+chez-exe by invoking make like so:
+
+  make csdir=/path/to/ChezScheme m=$machinetype
+
+machinetype must match the machine-type specifier ChezScheme provides.
