@@ -8,7 +8,7 @@ kernel = $(bootpath)/kernel.o
 binpath = $(csdir)/$m/bin
 scmexe = $(binpath)/scheme
 
-embed_target: main.c $(kernel) boot
+embed_target: embed_target.c $(kernel) boot
 	cc -o $@ $< $(kernel) -I$(bootpath) -ltinfo -lpthread -ldl -lm -Wall -Wextra -pedantic $(CFLAGS)
 	objcopy --add-section chezschemebootfile=boot $@
 
