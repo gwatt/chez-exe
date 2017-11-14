@@ -1,0 +1,5 @@
+#!/bin/sh
+
+ofile="${1##*/}"
+ofile="${ofile%.*}"
+exec objcopy embed_target --add-section schemesource="$1" "$ofile"
