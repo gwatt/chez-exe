@@ -8,6 +8,13 @@ kernel = $(bootpath)/kernel.o
 binpath = $(csdir)/$m/bin
 scmexe = $(binpath)/scheme
 
+compile-chez: chez.a compile-whole-program
+	cc -o $@ $< -W -Wall -Wextra -pedantic -lpthread -ltinfo -lm -ldl $(CFLAGS)
+	objcopy compile-chez --add-section schemeprogram=compile-whole-program
+
+compile-whole-program: compile-whole-program.ss
+	$(scmexe) -b ./boot --program $< $<
+
 chez.a: embed_target.o $(kernel)
 	ar rcs $@ $^
 
