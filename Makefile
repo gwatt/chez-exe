@@ -8,12 +8,15 @@ kernel = $(bootpath)/kernel.o
 binpath = $(csdir)/$m/bin
 scmexe = $(binpath)/scheme
 
-embed_target: embed_target.c $(kernel) boot
-	cc -o $@ $< $(kernel) -I$(bootpath) -ltinfo -lpthread -ldl -lm -Wall -Wextra -pedantic $(CFLAGS)
+chez.a: embed_target.o $(kernel)
+	ar rcs $@ $^
+
+embed_target.o: embed_target.c boot
+	cc -c -o $@ $< -I$(bootpath) -Wall -Wextra -pedantic $(CFLAGS)
 	objcopy --add-section chezschemebootfile=boot $@
 
 boot: $(psboot) $(csboot)
 	sh make-bootfile.sh "$(scmexe)" "$(psboot)" "$(csboot)"
 
 clean:
-	rm -f embed_target boot
+	rm -f boot chez.a embed_target.o
