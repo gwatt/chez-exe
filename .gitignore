@@ -3,3 +3,5 @@ boot
 *.o
 *.so
 *.wpo
+
+*.swp
