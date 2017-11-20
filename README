@@ -1,9 +1,9 @@
 ChezScheme Self-Hosting Executable
 
-The goal of this project is to produce executables that are a complete
-ChezScheme system and contain a scheme program.
-This is to work by embedding the ChezScheme boot files and a scheme program
-into ELF sections of a binary
+The goal of this project is to produce standalone executables that are
+a complete ChezScheme system and contain a scheme program.
+This works by embedding the ChezScheme bootfiles and a scheme program
+into the ELF sections of an executable.
 
 BUILDING
 
@@ -14,3 +14,20 @@ chez-exe by invoking make like so:
   make csdir=/path/to/ChezScheme m=$machinetype
 
 machinetype must match the machine-type specifier ChezScheme provides.
+
+Once built, there two important files: compile-chez-program and chez.a
+
+chez.a is a static library that contains embed_target.o and the kernel.o
+from the ChezScheme tree.
+compile-chez-program is a program that will take a scheme program and produce
+an executable that will run the given scheme program. It uses ChezScheme's
+compile-whole-program to generate a single compiled file that contains the
+given program as well as all reachable source libraries. Any scheme files
+accessed with (load ...) or not available in source form will need to be
+distributed with the generated executalble.
+
+You may give extra arguments to be passed to the C compiler. For example:
+    compile-chez-program foo.ss -lGL -lGLU -lGLEW
+will also link to the OpenGL library, allowing the scheme source to access
+the shared libraries by calling (load-shared-object #f) instead of loading
+each object individually.
