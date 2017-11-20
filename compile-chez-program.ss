@@ -50,7 +50,7 @@
 (define compiled-name (string-append basename ".chez"))
 
 (compile-program scheme-file)
-(compile-whole-program wpo-file compiled-name))
+(compile-whole-program wpo-file compiled-name)
 
 (define compile (join (cons* "cc -o" basename "chez.a" compiler-args) " "))
 
