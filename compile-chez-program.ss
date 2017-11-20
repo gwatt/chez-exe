@@ -1,7 +1,7 @@
 
 (import (chezscheme))
 
-(define args (command-line-args))
+(define args (command-line-arguments))
 
 (define (printlns . args)
   (for-each (lambda (x)
@@ -52,10 +52,18 @@
 (compile-program scheme-file)
 (compile-whole-program wpo-file compiled-name)
 
-(define compile (join (cons* "cc -o" basename "chez.a" compiler-args) " "))
+(define solibs
+  (string-append
+    "-ldl -lm -ltinfo"
+    (if (threaded?)
+        " -lpthread"
+        "")))
 
-(shell compile)
-(shell (join (list "objcopy" basename "--addsection" (string-append "schemeprogram=" compiled-name))))
+(define cc (join (cons* "cc -o" basename "chez.a" solibs compiler-args) " "))
+(define objcopy (join (list "objcopy" basename "--add-section" (string-append "schemeprogram=" compiled-name)) " "))
+
+(shell cc)
+(shell objcopy)
 
 (display basename)
 (newline)
