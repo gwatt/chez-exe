@@ -1,7 +1,0 @@
-#!/bin/sh
-
-ofile="${1##*/}"
-ofile="${ofile%.*}"
-cc -o "$ofile" chez.a "$@"
-scheme --program compile-whole-program.ss "$1"
-exec objcopy "$ofile" --add-section schemeprogram="$1"
