@@ -41,6 +41,12 @@
 (define scheme-file (car args))
 (define compiler-args (cdr args))
 
+(define mtype
+  (case (machine-type)
+    [(ta6le a6le) "-m64"]
+    [(ti3le i3le) "-m32"]
+    [else (error "Unsupported machine type")]))
+
 (define basename
   (let loop ([idx (- (string-length scheme-file) 1)])
     (if (char=? (string-ref scheme-file idx) #\.)
@@ -59,7 +65,7 @@
         " -lpthread"
         "")))
 
-(define cc (join (cons* "cc -o" basename "chez.a" solibs compiler-args) " "))
+(define cc (join (cons* "cc -o" basename "chez.a" mtype solibs compiler-args) " "))
 (define objcopy (join (list "objcopy" basename "--add-section" (string-append "schemeprogram=" compiled-name)) " "))
 
 (shell cc)
