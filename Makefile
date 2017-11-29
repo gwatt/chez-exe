@@ -8,6 +8,14 @@ kernel = $(bootpath)/kernel.o
 binpath = $(csdir)/$m/bin
 scmexe = $(binpath)/scheme
 
+h = $(m:t%=%)
+
+ifeq ($h, a6le)
+CFLAGS += -m64 -DBITS=64
+else ifeq ($h, i3le)
+CFLAGS += -m32 -DBITS=32
+endif
+
 compile-chez-program: compile-chez-program.ss chez.a
 	$(scmexe) -b ./boot --program $< $<
 
@@ -22,4 +30,4 @@ boot: $(psboot) $(csboot)
 	sh make-bootfile.sh "$(scmexe)" "$(psboot)" "$(csboot)"
 
 clean:
-	rm -f boot chez.a embed_target.o
+	rm -f boot chez.a embed_target.o *.chez *.so *.wpo

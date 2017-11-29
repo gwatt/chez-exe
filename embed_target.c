@@ -10,8 +10,6 @@
 
 #include <scheme.h>
 
-#define BITS (__SIZEOF_POINTER__ * __CHAR_BIT__)
-
 #if BITS == 64
 	typedef Elf64_Ehdr Elf_Ehdr;
 	typedef Elf64_Shdr Elf_Shdr;
