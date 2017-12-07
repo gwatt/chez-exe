@@ -21,6 +21,18 @@
     (unless (zero? val)
       (exit val))))
 
+(define (create-assembly-file scheme-file assembly-file)
+  (with-output-to-file assembly-file
+    (lambda ()
+      (printlns
+        ".global scheme_program_start"
+        ".global scheme_program_end"
+        "scheme_program_start:"
+        (string-append ".incbin \"" scheme-file "\"")
+        "scheme_program_end:"))
+    '(replace))
+  assembly-file)
+
 (unless (> (length args) 0)
   (parameterize ([current-output-port (current-error-port)])
     (printlns
@@ -52,6 +64,7 @@
     (if (char=? (string-ref scheme-file idx) #\.)
         (substring scheme-file 0 idx)
         (loop (- idx 1)))))
+
 (define wpo-file (string-append basename ".wpo"))
 (define compiled-name (string-append basename ".chez"))
 
@@ -65,11 +78,7 @@
         " -lpthread"
         "")))
 
-(define cc (join (cons* "cc -o" basename "chez.a" mtype solibs compiler-args) " "))
-(define objcopy (join (list "objcopy" basename "--add-section" (string-append "schemeprogram=" compiled-name)) " "))
-
-(shell cc)
-(shell objcopy)
+(shell (join (cons* "cc -o" basename "chez.a" (create-assembly-file wpo-file (string-append basename ".s")) mtype solibs compiler-args) " "))
 
 (display basename)
 (newline)

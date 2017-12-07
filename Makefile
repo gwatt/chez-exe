@@ -19,12 +19,14 @@ endif
 compile-chez-program: compile-chez-program.ss chez.a
 	$(scmexe) -b ./boot --program $< $<
 
-chez.a: embed_target.o $(kernel)
+chez.a: embed_target.o boot.o $(kernel)
 	ar rcs $@ $^
 
-embed_target.o: embed_target.c boot
+embed_target.o: embed_target.c
 	cc -c -o $@ $< -I$(bootpath) -Wall -Wextra -pedantic $(CFLAGS)
-	objcopy --add-section chezschemebootfile=boot $@
+
+boot.o: boot.s boot
+	cc -c $(CFLAGS) $<
 
 boot: $(psboot) $(csboot)
 	sh make-bootfile.sh "$(scmexe)" "$(psboot)" "$(csboot)"
