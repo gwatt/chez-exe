@@ -4,6 +4,7 @@ boot
 *.so
 *.wpo
 compile-chez-program
+compile-chez-program.s
 *.chez
 
 *.swp
