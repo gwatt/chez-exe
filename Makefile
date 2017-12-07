@@ -11,9 +11,9 @@ scmexe = $(binpath)/scheme
 h = $(m:t%=%)
 
 ifeq ($h, a6le)
-CFLAGS += -m64 -DBITS=64
+CFLAGS += -m64
 else ifeq ($h, i3le)
-CFLAGS += -m32 -DBITS=32
+CFLAGS += -m32
 endif
 
 compile-chez-program: compile-chez-program.ss chez.a
@@ -32,4 +32,4 @@ boot: $(psboot) $(csboot)
 	sh make-bootfile.sh "$(scmexe)" "$(psboot)" "$(csboot)"
 
 clean:
-	rm -f boot chez.a embed_target.o *.chez *.so *.wpo
+	rm -f boot chez.a compile-chez-program.s *.o *.chez *.so *.wpo
