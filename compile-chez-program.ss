@@ -47,7 +47,9 @@
 
 (define solibs
   (case (os-name)
-    [linux "-ldl -lm -ltinfo"]
+    [linux (if (threaded?)
+               "-ldl -lm -ltinfo -lpthread"
+               "-ldl -lm -ltinfo")]
     [macosx "-liconv -lncurses"]))
 
 (build-assembly-file asm-embed-file "scheme_program" compiled-name)
