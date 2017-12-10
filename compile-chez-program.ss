@@ -1,5 +1,5 @@
 
-(import (chezscheme))
+(import (chezscheme) (os-info) (build-assembly-file))
 
 (define args (command-line-arguments))
 
@@ -8,30 +8,6 @@
               (display x)
               (newline))
     args))
-
-(define (join strings sep)
-  (fold-left
-    (lambda (acc str)
-      (string-append acc sep str))
-    (car strings)
-    (cdr strings)))
-
-(define (shell cmd)
-  (let ([val (system cmd)])
-    (unless (zero? val)
-      (exit val))))
-
-(define (create-assembly-file scheme-file assembly-file)
-  (with-output-to-file assembly-file
-    (lambda ()
-      (printlns
-        ".global scheme_program_start"
-        ".global scheme_program_end"
-        "scheme_program_start:"
-        (string-append ".incbin \"" scheme-file "\"")
-        "scheme_program_end:"))
-    '(replace))
-  assembly-file)
 
 (unless (> (length args) 0)
   (parameterize ([current-output-port (current-error-port)])
@@ -53,11 +29,7 @@
 (define scheme-file (car args))
 (define compiler-args (cdr args))
 
-(define mtype
-  (case (machine-type)
-    [(ta6le a6le) "-m64"]
-    [(ti3le i3le) "-m32"]
-    [else (error "Unsupported machine type")]))
+(define mbits (format #f "-m~a" (machine-bits)))
 
 (define basename
   (let loop ([idx (- (string-length scheme-file) 1)])
@@ -68,17 +40,18 @@
 (define wpo-file (string-append basename ".wpo"))
 (define compiled-name (string-append basename ".chez"))
 
+(define asm-embed-file (string-append basename ".s"))
+
 (compile-program scheme-file)
 (compile-whole-program wpo-file compiled-name)
 
 (define solibs
-  (string-append
-    "-ldl -lm -ltinfo"
-    (if (threaded?)
-        " -lpthread"
-        "")))
+  (case (os-name)
+    [linux "-ldl -lm -ltinfo"]
+    [macosx "-liconv -lncurses"]))
 
-(shell (join (cons* "cc -o" basename "chez.a" (create-assembly-file wpo-file (string-append basename ".s")) mtype solibs compiler-args) " "))
+(build-assembly-file asm-embed-file "scheme_program" compiled-name)
+(system (format "cc -o ~a chez.a ~a ~a ~a ~{ ~s~}" basename asm-embed-file mbits solibs compiler-args))
 
 (display basename)
 (newline)

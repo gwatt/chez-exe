@@ -17,7 +17,7 @@ CFLAGS += -m32
 endif
 
 compile-chez-program: compile-chez-program.ss chez.a
-	$(scmexe) -b ./boot --program $< $<
+	$(scmexe) -b ./boot --compile-imported-libraries --program $< $<
 
 chez.a: embed_target.o boot.o $(kernel)
 	ar rcs $@ $^
@@ -28,8 +28,12 @@ embed_target.o: embed_target.c
 boot.o: boot.s boot
 	cc -c $(CFLAGS) $<
 
+boot.s:
+	echo '(import (build-assembly-file)) (build-assembly-file "boot.s" "chezschemebootfile" "boot")' | $(scmexe) -q -b $(psboot)
+
 boot: $(psboot) $(csboot)
-	sh make-bootfile.sh "$(scmexe)" "$(psboot)" "$(csboot)"
+	echo '(make-boot-file "boot" (list) "$(psboot)" "$(csboot)")' | "$(scmexe)" -q -b "$(psboot)" -b "$(csboot)"
 
 clean:
-	rm -f boot chez.a compile-chez-program.s *.o *.chez *.so *.wpo
+	rm -f boot chez.a *.s *.o *.chez *.so *.wpo
+
