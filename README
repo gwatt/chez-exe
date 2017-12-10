@@ -31,3 +31,7 @@ You may give extra arguments to be passed to the C compiler. For example:
 will also link to the OpenGL library, allowing the scheme source to access
 the shared libraries by calling (load-shared-object #f) instead of loading
 each object individually.
+
+SUPPORTED SYSTEMS:
+* Linux
+* Mac OS X
