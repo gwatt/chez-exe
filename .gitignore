@@ -1,10 +1,11 @@
 boot
 *.a
-*.o
-*.so
-*.wpo
-compile-chez-program
-compile-chez-program.s
 *.chez
-
+*.o
+*.s
+*.so
 *.swp
+*.wpo
+
+compile-chez-program
+
