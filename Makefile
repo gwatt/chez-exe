@@ -8,13 +8,7 @@ kernel = $(bootpath)/kernel.o
 binpath = $(csdir)/$m/bin
 scmexe = $(binpath)/scheme
 
-h = $(m:t%=%)
-
-ifeq ($h, a6le)
-CFLAGS += -m64
-else ifeq ($h, i3le)
-CFLAGS += -m32
-endif
+CFLAGS += $(shell echo '(include "utils.ss") (format (current-output-port) "-m~a" (machine-bits))' | $(scmexe) -q -b $(psboot))
 
 compile-chez-program: compile-chez-program.ss chez.a
 	$(scmexe) -b ./boot --compile-imported-libraries --program $< $<
@@ -29,7 +23,7 @@ boot.o: boot.s boot
 	cc -c $(CFLAGS) $<
 
 boot.s:
-	echo '(import (build-assembly-file)) (build-assembly-file "boot.s" "chezschemebootfile" "boot")' | $(scmexe) -q -b $(psboot)
+	echo '(include "utils.ss") (build-assembly-file "boot.s" "chezschemebootfile" "boot")' | $(scmexe) -q -b $(psboot)
 
 boot: $(psboot) $(csboot)
 	echo '(make-boot-file "boot" (list) "$(psboot)" "$(csboot)")' | "$(scmexe)" -q -b "$(psboot)" -b "$(csboot)"

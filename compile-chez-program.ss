@@ -1,5 +1,6 @@
 
-(import (chezscheme) (os-info) (build-assembly-file))
+(import (chezscheme))
+(include "utils.ss")
 
 (define args (command-line-arguments))
 
