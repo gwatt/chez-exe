@@ -29,5 +29,5 @@ boot: $(psboot) $(csboot)
 	echo '(make-boot-file "boot" (list) "$(psboot)" "$(csboot)")' | "$(scmexe)" -q -b "$(psboot)" -b "$(csboot)"
 
 clean:
-	rm -f boot chez.a *.s *.o *.chez *.so *.wpo
+	rm -f compile-chez-program boot chez.a *.s *.o *.chez *.so *.wpo
 
