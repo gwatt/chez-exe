@@ -7,13 +7,19 @@ into the executable.
 
 BUILDING
 
-You must download and build ChezScheme (https://github.com/cisco/ChezScheme)
-before you can build this project. Once you have done that, you can build
-chez-exe by invoking make like so:
+Building this project requires a working copy of ChezScheme. Chez need not be
+installed anywhere specific, even building inside the repository should work.
+Once ChezScheme is ready, you can build chez-exe like so:
 
-  make csdir=/path/to/ChezScheme m=$machinetype
+    make bootpath=... [libpath=...] [incdir=...] [scheme=...]
 
-machinetype must match the machine-type specifier ChezScheme provides.
+Of the make variables, only bootpath must be specified. Bootpath indicates
+where to find petite.boot and scheme.boot
+libpath, incdir, and scheme are all optional.
+
+libpath controls where to find the kernel.o file. This defaults to $bootpath.
+incdir controls where to find scheme.h. This defaults to $bootpath.
+scheme controls the name of the executable used. This defaults to "scheme".
 
 Once built, there two important files: compile-chez-program and chez.a
 
