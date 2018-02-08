@@ -18,17 +18,17 @@ chez.a: embed_target.o boot.o $(kernel)
 	ar rcs $@ $^
 
 embed_target.o: embed_target.c
-	cc -c -o $@ $< -I$(incdir) -Wall -Wextra -pedantic $(CFLAGS)
+	$(CC) -c -o $@ $< -I$(incdir) -Wall -Wextra -pedantic $(CFLAGS)
 
-boot.o: boot.s boot
-	cc -c $(CFLAGS) $<
+boot.o: boot.generated.c
+	$(CC) -o $@ -c $(CFLAGS) $<
 
-boot.s:
-	echo '(include "utils.ss") (build-assembly-file "boot.s" "chezschemebootfile" "boot")' | $(scheme) -q -b $(psboot)
+boot.generated.c: boot
+	echo '(include "utils.ss") (build-included-binary-file "boot.generated.c" "chezschemebootfile" "boot")' | $(scheme) -q -b $(psboot)
 
 boot: $(psboot) $(csboot)
 	echo '(make-boot-file "boot" (list) "$(psboot)" "$(csboot)")' | "$(scheme)" -q -b "$(psboot)" -b "$(csboot)"
 
 clean:
-	rm -f compile-chez-program boot chez.a *.s *.o *.chez *.so *.wpo
+	rm -f compile-chez-program boot chez.a *.generated.c *.s *.o *.chez *.so *.wpo
 

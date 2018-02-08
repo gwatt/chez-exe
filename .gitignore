@@ -1,4 +1,5 @@
 boot
+*.generated.c
 *.a
 *.chez
 *.o

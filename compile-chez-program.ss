@@ -41,7 +41,7 @@
 (define wpo-file (string-append basename ".wpo"))
 (define compiled-name (string-append basename ".chez"))
 
-(define asm-embed-file (string-append basename ".s"))
+(define embed-file (string-append basename ".generated.c"))
 
 (compile-program scheme-file)
 (compile-whole-program wpo-file compiled-name)
@@ -53,8 +53,8 @@
                "-ldl -lm -ltinfo")]
     [macosx "-liconv -lncurses"]))
 
-(build-assembly-file asm-embed-file "scheme_program" compiled-name)
-(system (format "cc -o ~a chez.a ~a ~a ~a ~{ ~s~}" basename asm-embed-file mbits solibs compiler-args))
+(build-included-binary-file embed-file "scheme_program" compiled-name)
+(system (format "cc -o ~a chez.a ~a ~a ~a ~{ ~s~}" basename embed-file mbits solibs compiler-args))
 
 (display basename)
 (newline)

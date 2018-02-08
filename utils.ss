@@ -12,18 +12,11 @@
 (define (machine-bits)
   (* (ftype-sizeof void*) 8))
 
-(define (name->linker-symbol c-name)
-  (case (os-name)
-    [(linux) c-name]
-    [(macosx) (format "_~a" c-name)]))
-(define (build-assembly-file output-name start/end-name include-file)
+(define (build-included-binary-file output-name symbol-name include-file)
   (with-output-to-file output-name
     (lambda ()
-      (let ([start (name->linker-symbol (format "~a_start" start/end-name))]
-            [end (name->linker-symbol (format "~a_end" start/end-name))])
-        (format #t ".global ~a~n" start)
-        (format #t ".global ~a~n" end)
-        (format #t "~a:~n" start)
-        (format #t ".incbin ~s~n" include-file)
-        (format #t "~a:~n" end)))
+      (let ([data (bytevector->u8-list (get-bytevector-all (open-file-input-port include-file)))])
+        (format #t "#include <stdint.h>~n")
+        (format #t "const uint8_t ~a[] = {~{0x~x,~}};~n" symbol-name data)
+        (format #t "const unsigned int ~a_size = sizeof(~a);~n" symbol-name symbol-name)))
     '(replace)))

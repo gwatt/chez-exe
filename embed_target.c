@@ -9,10 +9,10 @@
 
 #include <scheme.h>
 
-extern const char chezschemebootfile_start;
-extern const char chezschemebootfile_end;
-extern const char scheme_program_start;
-extern const char scheme_program_end;
+extern const char chezschemebootfile;
+extern const unsigned chezschemebootfile_size;
+extern const char scheme_program;
+extern const unsigned scheme_program_size;
 
 int maketempfile(char *template, const char *contents, size_t size) {
 	int fd;
@@ -29,10 +29,13 @@ int main(int argc, const char **argv) {
 	int bootfd;
 	char schemefilename[] = "/tmp/schemeprogramXXXXXX";
 	int schemefd;
-        int ret;
+	int ret;
 
-	bootfd = maketempfile(bootfilename, &chezschemebootfile_start, &chezschemebootfile_end - &chezschemebootfile_start);
-	schemefd = maketempfile(schemefilename, &scheme_program_start, &scheme_program_end - &scheme_program_start);
+	fprintf(stderr, "chezschemebootfile_size = %d\n", chezschemebootfile_size);
+	fprintf(stderr, "scheme_program_size = %d\n", scheme_program_size);
+
+	bootfd = maketempfile(bootfilename, &chezschemebootfile, chezschemebootfile_size);
+	schemefd = maketempfile(schemefilename, &scheme_program, scheme_program_size);
 
 	Sscheme_init(0);
 	Sregister_boot_file(bootfilename);
