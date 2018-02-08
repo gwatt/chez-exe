@@ -1,0 +1,7 @@
+chez-exe
+Copyright 2017 Graham Watt
+
+While chez-exe is not a derivative work of ChezScheme, its generated output
+does contain copyrighted parts of ChezScheme and thus anything created by
+chez-exe will need to include the appropriate LICENSE and NOTICE information
+from ChezScheme (https://github.com/cisco/ChezScheme)
