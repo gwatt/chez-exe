@@ -14,6 +14,16 @@ extern const unsigned chezschemebootfile_size;
 extern const char scheme_program;
 extern const unsigned scheme_program_size;
 
+char bootfilename[] = "/tmp/chezschemebootXXXXXX";
+char schemefilename[] = "/tmp/schemeprogramXXXXXX";
+const char *cleanup_bootfile = 0;
+const char *cleanup_schemefile = 0;
+
+void cleanup(void) {
+	if (cleanup_bootfile) unlink(bootfilename);
+	if (cleanup_schemefile) unlink(schemefilename);
+}
+
 int maketempfile(char *template, const char *contents, size_t size) {
 	int fd;
 	fd = mkstemp(template);
@@ -25,17 +35,16 @@ int maketempfile(char *template, const char *contents, size_t size) {
 }
 
 int main(int argc, const char **argv) {
-	char bootfilename[] = "/tmp/chezschemebootXXXXXX";
 	int bootfd;
-	char schemefilename[] = "/tmp/schemeprogramXXXXXX";
 	int schemefd;
 	int ret;
 
-	fprintf(stderr, "chezschemebootfile_size = %d\n", chezschemebootfile_size);
-	fprintf(stderr, "scheme_program_size = %d\n", scheme_program_size);
+	atexit(cleanup);
 
 	bootfd = maketempfile(bootfilename, &chezschemebootfile, chezschemebootfile_size);
+	cleanup_bootfile = bootfilename;
 	schemefd = maketempfile(schemefilename, &scheme_program, scheme_program_size);
+	cleanup_schemefile = schemefilename;
 
 	Sscheme_init(0);
 	Sregister_boot_file(bootfilename);
