@@ -2,7 +2,18 @@
 (import (chezscheme))
 (include "utils.ss")
 
-(define args (command-line-arguments))
+(define-syntax param-args
+  (syntax-rules ()
+    [(_ arg-list-expr (opt param) ...)
+      (let loop ([arg-list arg-list-expr])
+        (if (null? arg-list)
+            '()
+            (case (car arg-list)
+              [(opt) (if (null? (cdr arg-list))
+                         (errorf 'param-args "Missing required argument for ~a" opt))
+                (param (cadr arg-list))
+                (loop (cddr arg-list))] ...
+              [else arg-list])))]))
 
 (define (printlns . args)
   (for-each (lambda (x)
@@ -10,11 +21,29 @@
               (newline))
     args))
 
-(unless (> (length args) 0)
+(let
+  ([libdirs (getenv "CHEZSCHEMELIBDIRS")]
+   [libexts (getenv "CHEZSCHEMELIBEXTS")])
+  (if libdirs (library-directories libdirs))
+  (if libexts (library-extensions libexts)))
+
+(define args
+  (param-args (command-line-arguments)
+    ["--libdirs" library-directories]
+    ["--libexts" library-extensions]
+    ["--srcdirs" (lambda (dirs)
+                   (source-directories
+                     (split-around dirs (path-separator))))]
+    ["--optimize-level" (lambda (level)
+                          (optimize-level (string->number level)))]))
+
+
+(when (null? args)
   (parameterize ([current-output-port (current-error-port)])
     (printlns
       "Usage:"
-      "compile-chez-program <scheme-program.ss> [args ...]"
+      "compile-chez-program [--libdirs dirs] [--libexts exts] [--srcdirs dirs]
+          [--optimize-level 0|1|2|3] <scheme-program.ss> [args ...]"
       ""
       "This will compile a given scheme file and all of its imported libraries"
       "as with (compile-whole-program wpo-file output-file)"

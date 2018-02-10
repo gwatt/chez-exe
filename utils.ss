@@ -12,6 +12,11 @@
 (define (machine-bits)
   (* (ftype-sizeof void*) 8))
 
+(define (path-separator)
+  (case (os-name)
+    [windows #\;]
+    [else #\:]))
+
 (define (build-included-binary-file output-name symbol-name include-file)
   (with-output-to-file output-name
     (lambda ()
@@ -20,3 +25,11 @@
         (format #t "const uint8_t ~a[] = {~{0x~x,~}};~n" symbol-name data)
         (format #t "const unsigned int ~a_size = sizeof(~a);~n" symbol-name symbol-name)))
     '(replace)))
+
+(define (split-around str ch)
+  (let loop ([i 0] [start 0])
+    (cond
+      [(<= (string-length str) i) (list (substring str start i))]
+      [(char=? (string-ref str i) #\:)
+       (cons (substring str start i) (loop (+ i 1) (+ i 1)))]
+      [else (loop (+ i 1) start)])))

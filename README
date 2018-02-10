@@ -30,13 +30,32 @@ an executable that will run the given scheme program. It uses ChezScheme's
 compile-whole-program to generate a single compiled file that contains the
 given program as well as all reachable source libraries. Any scheme files
 accessed with (load ...) or not available in source form will need to be
-distributed with the generated executalble.
+distributed with the generated executable.
 
-You may give extra arguments to be passed to the C compiler. For example:
+RUNNING:
+
+    compile-chez-program [--libdirs ...] [--libexts ...] [--srcdirs ...]
+        [--optimize-level 0|1|2|3] program-file.ss [...]
+
+compile-chez-program understands CHEZSCHEMELIBDIRS and CHEZSCHEMELIBEXTS in
+the same way that the ChezScheme executables understand them.
+compile-chez-program also recognizes the following command line arguments:
+  --libdirs        (same as ChezScheme)
+  --libexts        (same as ChezScheme)
+  --srcdirs
+  --optimize-level (same as ChezScheme)
+The --srcdirs argument alters the source-directories parameter exactly like
+--libdirs alters the library-directories parameter. The rest of the arguments
+behave the same as their counterparts in the ChezScheme executables.
+All of these arguments are optional. compile-chez-program assumes that the
+first unknown argument is the filename to compile. Any further arguments are
+passed to the C compiler.
+
+For example:
     compile-chez-program foo.ss -lGL -lGLU -lGLEW
-will also link to the OpenGL library, allowing the scheme source to access
-the shared libraries by calling (load-shared-object #f) instead of loading
-each object individually.
+will also link against the OpenGL libraries, allowing the scheme source to
+access the shared libraries by calling (load-shared-object #f) instead of
+loading each object file individually.
 
 SUPPORTED SYSTEMS:
 * Linux
