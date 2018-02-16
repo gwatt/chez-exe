@@ -61,11 +61,7 @@
 
 (define mbits (format #f "-m~a" (machine-bits)))
 
-(define basename
-  (let loop ([idx (- (string-length scheme-file) 1)])
-    (if (char=? (string-ref scheme-file idx) #\.)
-        (substring scheme-file 0 idx)
-        (loop (- idx 1)))))
+(define basename (path-root scheme-file))
 
 (define wpo-file (string-append basename ".wpo"))
 (define compiled-name (string-append basename ".chez"))
@@ -78,9 +74,9 @@
 (define solibs
   (case (os-name)
     [linux (if (threaded?)
-               "-ldl -lm -ltinfo -lpthread"
-               "-ldl -lm -ltinfo")]
-    [macosx "-liconv -lncurses"]))
+               "-ldl -lm -lpthread"
+               "-ldl -lm")]
+    [macosx "-liconv"]))
 
 (build-included-binary-file embed-file "scheme_program" compiled-name)
 (system (format "cc -o ~a chez.a ~a ~a ~a ~{ ~s~}" basename embed-file mbits solibs compiler-args))

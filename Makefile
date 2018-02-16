@@ -14,10 +14,10 @@ CFLAGS += $(shell echo '(include "utils.ss") (format (current-output-port) "-m~a
 compile-chez-program: compile-chez-program.ss chez.a
 	$(scheme) -b ./boot --compile-imported-libraries --program $< $<
 
-chez.a: embed_target.o boot.o $(kernel)
+chez.a: embed_target.o stubs.o boot.o $(kernel)
 	ar rcs $@ $^
 
-embed_target.o: embed_target.c
+%.o: %.c
 	$(CC) -c -o $@ $< -I$(incdir) -Wall -Wextra -pedantic $(CFLAGS)
 
 boot.o: boot.generated.c
