@@ -1,5 +1,5 @@
 
-.PHONEY: clean
+.PHONY: clean
 
 incdir ?= $(bootpath)
 libdir ?= $(bootpath)
