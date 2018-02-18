@@ -11,10 +11,21 @@ Building this project requires a working copy of ChezScheme. Chez need not be
 installed anywhere specific, even building inside the repository should work.
 Once ChezScheme is ready, you can build chez-exe like so:
 
-    make bootpath=... [libpath=...] [incdir=...] [scheme=...]
+    [./gen-config.ss [--prefix prefix] [--bindir bindir] [--libdir libdir] \
+        [--bootpath bootpath]]
+    make [bootpath=...] [libpath=...] [incdir=...] [scheme=...]
 
-Of the make variables, only bootpath must be specified. Bootpath indicates
-where to find petite.boot and scheme.boot
+You may optionally run gen-config.ss to create "config.ss" and "make.in".
+These two files ease the build process - especially for creating an
+installable version of chez-exe - but are not required.
+config.ss contains code to control where compile-chez-program looks for
+chez.a.
+make.in contains definitions that control where the build looks to find the
+bootfiles, and where to put files when installing.
+
+If you use gen-config to specify the bootpath, you may omit from the command
+line when invoking make. Otherwise, it is required. Bootpath indicates where
+to find petite.boot and scheme.boot
 libpath, incdir, and scheme are all optional.
 
 libpath controls where to find the kernel.o file. This defaults to $bootpath.
