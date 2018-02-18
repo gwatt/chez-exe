@@ -33,3 +33,24 @@
       [(char=? (string-ref str i) #\:)
        (cons (substring str start i) (loop (+ i 1) (+ i 1)))]
       [else (loop (+ i 1) start)])))
+
+(define-syntax param-args
+  (syntax-rules ()
+    [(_ arg-list-expr (opt param) ...)
+      (let loop ([arg-list arg-list-expr])
+        (if (null? arg-list)
+            '()
+            (case (car arg-list)
+              [(opt) (if (null? (cdr arg-list))
+                         (errorf 'param-args "Missing required argument for ~a" opt))
+                (param (cadr arg-list))
+                (loop (cddr arg-list))] ...
+              [else arg-list])))]))
+
+(define (printlns . args)
+  (for-each (lambda (x)
+              (display x)
+              (newline))
+    args))
+
+

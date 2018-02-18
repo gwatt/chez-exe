@@ -1,4 +1,6 @@
 boot
+config.ss
+make.in
 *.generated.c
 *.a
 *.chez

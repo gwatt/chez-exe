@@ -2,24 +2,10 @@
 (import (chezscheme))
 (include "utils.ss")
 
-(define-syntax param-args
-  (syntax-rules ()
-    [(_ arg-list-expr (opt param) ...)
-      (let loop ([arg-list arg-list-expr])
-        (if (null? arg-list)
-            '()
-            (case (car arg-list)
-              [(opt) (if (null? (cdr arg-list))
-                         (errorf 'param-args "Missing required argument for ~a" opt))
-                (param (cadr arg-list))
-                (loop (cddr arg-list))] ...
-              [else arg-list])))]))
+(define chez-file (make-parameter "chez.a"))
 
-(define (printlns . args)
-  (for-each (lambda (x)
-              (display x)
-              (newline))
-    args))
+(meta-cond
+  [(file-exists? "config.ss") (include "config.ss")])
 
 (let
   ([libdirs (getenv "CHEZSCHEMELIBDIRS")]
@@ -35,7 +21,8 @@
                    (source-directories
                      (split-around dirs (path-separator))))]
     ["--optimize-level" (lambda (level)
-                          (optimize-level (string->number level)))]))
+                          (optimize-level (string->number level)))]
+    ["--chez-file" chez-file]))
 
 
 (when (null? args)
@@ -43,7 +30,8 @@
     (printlns
       "Usage:"
       "compile-chez-program [--libdirs dirs] [--libexts exts] [--srcdirs dirs]
-          [--optimize-level 0|1|2|3] <scheme-program.ss> [args ...]"
+          [--optimize-level 0|1|2|3] [--chez-file /path/to/chez.a]
+          <scheme-program.ss> [c-compiler-args ...]"
       ""
       "This will compile a given scheme file and all of its imported libraries"
       "as with (compile-whole-program wpo-file output-file)"
@@ -79,7 +67,7 @@
     [macosx "-liconv"]))
 
 (build-included-binary-file embed-file "scheme_program" compiled-name)
-(system (format "cc -o ~a chez.a ~a ~a ~a ~{ ~s~}" basename embed-file mbits solibs compiler-args))
+(system (format "cc -o ~a ~a ~a ~a ~a ~{ ~s~}" basename (chez-file) embed-file mbits solibs compiler-args))
 
 (display basename)
 (newline)
