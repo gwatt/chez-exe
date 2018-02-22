@@ -32,7 +32,7 @@ boot: $(psboot) $(csboot)
 	echo '(make-boot-file "boot" (list) "$(psboot)" "$(csboot)")' | "$(scheme)" -q -b "$(psboot)" -b "$(csboot)"
 
 install: compile-chez-program
-	install -m 755 compile-chez-program -t $(DESTDIR)$(installbindir)/
+	install -m 755 compile-chez-program $(DESTDIR)$(installbindir)/
 	install -m 644 chez.a $(DESTDIR)$(installlibdir)/
 
 clean:
