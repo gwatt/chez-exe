@@ -1,6 +1,7 @@
 boot
 config.ss
 make.in
+tools.ini
 *.generated.c
 *.a
 *.chez
@@ -9,6 +10,9 @@ make.in
 *.so
 *.swp
 *.wpo
+*.exe
+*.lib
+*.obj
 
 compile-chez-program
 

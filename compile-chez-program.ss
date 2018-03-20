@@ -2,7 +2,8 @@
 (import (chezscheme))
 (include "utils.ss")
 
-(define chez-file (make-parameter "chez.a"))
+(define chez-lib-dir (make-parameter "."))
+(define gui (make-parameter #f))
 
 (meta-cond
   [(file-exists? "config.ss") (include "config.ss")])
@@ -22,7 +23,15 @@
                      (split-around dirs (path-separator))))]
     ["--optimize-level" (lambda (level)
                           (optimize-level (string->number level)))]
-    ["--chez-file" chez-file]))
+    ["--chez-lib-dir" chez-lib-dir]
+    ;;; Windows only
+    [#t "--gui" gui]))
+
+(define chez-file
+  (path-append (chez-lib-dir)
+    (case (os-name)
+      [windows "chez.lib"]
+      [else "chez.a"])))
 
 
 (when (null? args)
@@ -30,7 +39,7 @@
     (printlns
       "Usage:"
       "compile-chez-program [--libdirs dirs] [--libexts exts] [--srcdirs dirs]
-          [--optimize-level 0|1|2|3] [--chez-file /path/to/chez.a]
+          [--optimize-level 0|1|2|3] [--chez-lib-dir /path/to/chez.a]
           <scheme-program.ss> [c-compiler-args ...]"
       ""
       "This will compile a given scheme file and all of its imported libraries"
@@ -50,6 +59,10 @@
 (define mbits (format #f "-m~a" (machine-bits)))
 
 (define basename (path-root scheme-file))
+(define exe-name
+  (case (os-name)
+    [windows (string-append basename ".exe")]
+    [else basename]))
 
 (define wpo-file (string-append basename ".wpo"))
 (define compiled-name (string-append basename ".chez"))
@@ -59,15 +72,26 @@
 (compile-program scheme-file)
 (compile-whole-program wpo-file compiled-name)
 
+(define win-main
+  (path-append (chez-lib-dir)
+    (if (gui)
+        "gui_main.obj"
+        "console_main.obj")))
+
 (define solibs
   (case (os-name)
     [linux (if (threaded?)
                "-ldl -lm -lpthread"
                "-ldl -lm")]
-    [macosx "-liconv"]))
+    [macosx "-liconv"]
+    [windows "rpcrt4.lib ole32.lib advapi32.lib User32.lib"]))
 
 (build-included-binary-file embed-file "scheme_program" compiled-name)
-(system (format "cc -o ~a ~a ~a ~a ~a ~{ ~s~}" basename (chez-file) embed-file mbits solibs compiler-args))
+(case (os-name)
+  [windows
+   (system (format "cl /nologo /MD /Fe:~a ~a ~a ~a ~a ~{ ~a~}" exe-name win-main solibs chez-file embed-file compiler-args))]
+  [else
+   (system (format "cc -o ~a ~a ~a ~a ~a ~{ ~s~}" exe-name chez-file embed-file mbits solibs compiler-args))])
 
 (display basename)
 (newline)

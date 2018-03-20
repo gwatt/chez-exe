@@ -17,6 +17,18 @@
     [windows #\;]
     [else #\:]))
 
+(define (path-append fst . rest)
+  (fold-left
+    (lambda (path str)
+      (string-append path (string (directory-separator)) str))
+    fst
+    rest))
+
+(define (chez-lib-name)
+  (case (os-name)
+    [windows "chez.lib"]
+    [else "chez.a"]))
+
 (define (build-included-binary-file output-name symbol-name include-file)
   (with-output-to-file output-name
     (lambda ()
@@ -35,17 +47,25 @@
       [else (loop (+ i 1) start)])))
 
 (define-syntax param-args
-  (syntax-rules ()
-    [(_ arg-list-expr (opt param) ...)
-      (let loop ([arg-list arg-list-expr])
-        (if (null? arg-list)
-            '()
-            (case (car arg-list)
-              [(opt) (if (null? (cdr arg-list))
-                         (errorf 'param-args "Missing required argument for ~a" opt))
-                (param (cadr arg-list))
-                (loop (cddr arg-list))] ...
-              [else arg-list])))]))
+  (lambda (x)
+    (syntax-case x ()
+      [(_ arg-list-expr cases ...)
+       #`(let loop ([args arg-list-expr])
+           (if (null? args)
+               '()
+               (case (car args)
+                 #,@(map (lambda (c)
+                           (syntax-case c ()
+                             [(#t case-expr func) #'(case-expr (func #t) (loop (cdr args)))]
+                             [(#f case-expr func) #'(case-expr (func) (loop (cdr args)))]
+                             [(case-expr func)
+                              #'(case-expr
+                                  (if (null? (cdr args))
+                                      (errorf 'param-args "Missing required argument for ~a" 'case-expr))
+                                  (func (cadr args))
+                                  (loop (cddr args)))]))
+                      #'(cases ...))
+                   [else args])))])))
 
 (define (printlns . args)
   (for-each (lambda (x)

@@ -11,10 +11,10 @@ csboot = $(bootpath)/scheme.boot
 kernel = $(libdir)/kernel.o
 scheme ?= scheme
 
-CFLAGS += $(shell echo '(include "utils.ss") (format (current-output-port) "-m~a" (machine-bits))' | $(scheme) -q -b $(psboot))
+runscheme = "$(scheme)" -b "$(bootpath)/petite.boot" -b "$(bootpath)/scheme.boot"
 
 compile-chez-program: compile-chez-program.ss chez.a $(wildcard config.ss)
-	$(scheme) -b ./boot --compile-imported-libraries --program $< --chez-file chez.a $<
+	$(scheme) -b ./boot --compile-imported-libraries --program $< --chez-lib-dir . $<
 
 chez.a: embed_target.o stubs.o boot.o $(kernel)
 	ar rcs $@ $^
@@ -26,10 +26,10 @@ boot.o: boot.generated.c
 	$(CC) -o $@ -c $(CFLAGS) $<
 
 boot.generated.c: boot
-	echo '(include "utils.ss") (build-included-binary-file "boot.generated.c" "chezschemebootfile" "boot")' | $(scheme) -q -b $(psboot)
+	$(runscheme) --script build-included-binary-file.ss "$@" chezschemebootfile boot
 
 boot: $(psboot) $(csboot)
-	echo '(make-boot-file "boot" (list) "$(psboot)" "$(csboot)")' | "$(scheme)" -q -b "$(psboot)" -b "$(csboot)"
+	$(runscheme) --script make-boot-file.ss "$(bootpath)"
 
 install: compile-chez-program
 	install -m 755 compile-chez-program $(DESTDIR)$(installbindir)/

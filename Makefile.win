@@ -1,0 +1,35 @@
+
+EXE = compile-chez-program.exe
+GMAIN = gui_main.obj
+CMAIN = console_main.obj
+
+all: $(EXE) $(GMAIN) $(CMAIN)
+
+$(EXE): compile-chez-program.ss $(CMAIN) chez.lib
+	"$(scheme)" --program compile-chez-program.ss --chez-lib-dir . compile-chez-program.ss
+
+chez.lib: embed_target_windows.obj boot.generated.obj "$(bootpath)/csv95md.lib"
+	lib /out:$@ $**
+
+.c.obj:
+	cl /nologo /Wall /I"$(bootpath)" /DSCHEME_STATIC /DWIN32_LEAN_AND_MEAN /MD /c $**
+
+boot:
+	"$(scheme)" --script make-boot-file.ss "$(bootpath)"
+
+boot.generated.c: boot
+	"$(scheme)" --script build-included-binary-file.ss boot.generated.c chezschemebootfile boot
+
+install: all
+	-mkdir $(installlibdir)
+	-mkdir $(installbindir)
+	copy /y $(EXE) $(installbindir)
+	copy /y $(GMAIN) $(installlibdir)
+	copy /y $(CMAIN) $(installlibdir)
+	copy /y chez.lib $(installlibdir)
+
+clean:
+	-del /F boot *.chez *.exe *.obj *.lib *.generated.c *.wpo *.so *.exp
+
+cleanconfig:
+	-del /F config.ss tools.ini

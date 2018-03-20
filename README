@@ -5,23 +5,40 @@ a complete ChezScheme system and contain a scheme program.
 This works by embedding the ChezScheme bootfiles and a scheme program
 into the executable.
 
+SUPPORTED SYSTEMS:
+* Linux
+* Mac OS X
+* Windows
+
+REQUIREMENTS
+
+chez-exe requires a C compiler, make, and ChezScheme to build. On unix systems
+gcc or compatible will be fine. For Windows, this requires cl.exe. Similarly,
+on unix systems GNU make is required, while on Windows nmake is needed.
+
 BUILDING
 
 Building this project requires a working copy of ChezScheme. Chez need not be
 installed anywhere specific, even building inside the repository should work.
 Once ChezScheme is ready, you can build chez-exe like so:
 
-    [./gen-config.ss [--prefix prefix] [--bindir bindir] [--libdir libdir] \
-        [--bootpath bootpath]]
+    scheme --script gen-config.ss [--prefix prefix] [--bindir bindir] \
+        [--libdir libdir] [--bootpath bootpath] [--scheme scheme]
     make [bootpath=...] [libpath=...] [incdir=...] [scheme=...]
 
-You may optionally run gen-config.ss to create "config.ss" and "make.in".
-These two files ease the build process - especially for creating an
-installable version of chez-exe - but are not required.
-config.ss contains code to control where compile-chez-program looks for
-chez.a.
-make.in contains definitions that control where the build looks to find the
-bootfiles, and where to put files when installing.
+Running gen-config.ss will create two files:
+config.ss and make.in on unix, or config.ss and tools.ini on Windows.
+These files ease the building process when compiling and installing chez-exe.
+The options for gen-config are as follows:
+  --prefix - base directory for installing the libraries and binaries
+  --bindir - directory for installing binaries
+  --libdir - directory for installing libraries
+  --bootpath - directory that contains .boot files and scheme.h
+  --scheme - name or command line of scheme executable
+These --bindir and --libdir behave differently on unix and Windows. On Unix,
+--bindir defaults to $prefix/bin and --libdir to $prefix/lib, but on Windows
+they both default to $prefix. Additionally, the default for prefix on Unix is
+/usr/local while on Windows it is %LOCALAPPDATA%\chez-exe
 
 If you use gen-config to specify the bootpath, you may omit from the command
 line when invoking make. Otherwise, it is required. Bootpath indicates where
@@ -46,7 +63,8 @@ distributed with the generated executable.
 RUNNING:
 
     compile-chez-program [--libdirs ...] [--libexts ...] [--srcdirs ...]
-        [--optimize-level 0|1|2|3] program-file.ss [...]
+        [--chez-lib-dir /path/to/chezlib] [--optimize-level 0|1|2|3]
+        program-file.ss [...]
 
 compile-chez-program understands CHEZSCHEMELIBDIRS and CHEZSCHEMELIBEXTS in
 the same way that the ChezScheme executables understand them.
@@ -55,6 +73,7 @@ compile-chez-program also recognizes the following command line arguments:
   --libexts        (same as ChezScheme)
   --srcdirs
   --optimize-level (same as ChezScheme)
+  --chez-lib-dir
 The --srcdirs argument alters the source-directories parameter exactly like
 --libdirs alters the library-directories parameter. The rest of the arguments
 behave the same as their counterparts in the ChezScheme executables.
@@ -67,7 +86,3 @@ For example:
 will also link against the OpenGL libraries, allowing the scheme source to
 access the shared libraries by calling (load-shared-object #f) instead of
 loading each object file individually.
-
-SUPPORTED SYSTEMS:
-* Linux
-* Mac OS X
