@@ -51,6 +51,14 @@ scheme controls the name of the executable used. This defaults to "scheme".
 
 Once built, there two important files: compile-chez-program and chez.a
 
+NOTE: When building on Windows, make sure to use the matching bitsize of the
+MSVC compiler and Chez Scheme. If you see errors similar to:
+    unresolved external symbol _Sscheme_init
+    unresolved external symbol _Sregister_boot_file
+    unresolved external symbol _Sbuild_heap
+    unresolved external symbol _Sscheme_program
+double check that you're running "make" from the correct "Native Tools Command Prompt".
+
 chez.a is a static library that contains embed_target.o and the kernel.o
 from the ChezScheme tree.
 compile-chez-program is a program that will take a scheme program and produce
