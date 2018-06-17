@@ -8,7 +8,7 @@ all: $(EXE) $(GMAIN) $(CMAIN)
 $(EXE): compile-chez-program.ss $(CMAIN) chez.lib
 	"$(scheme)" --program compile-chez-program.ss --chez-lib-dir . compile-chez-program.ss
 
-chez.lib: embed_target_windows.obj boot.generated.obj "$(bootpath)/csv95md.lib"
+chez.lib: embed_target_windows.obj boot.generated.obj "$(bootpath)/csv*md.lib"
 	lib /out:$@ $**
 
 .c.obj:
