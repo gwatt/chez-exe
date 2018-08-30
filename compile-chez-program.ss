@@ -70,7 +70,7 @@
 (define embed-file (string-append basename ".generated.c"))
 
 (compile-program scheme-file)
-(compile-whole-program wpo-file compiled-name)
+(compile-whole-program wpo-file compiled-name #t)
 
 (define win-main
   (path-append (chez-lib-dir)
