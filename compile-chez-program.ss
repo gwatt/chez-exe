@@ -81,8 +81,8 @@
 (define solibs
   (case (os-name)
     [linux (if (threaded?)
-               "-ldl -lm -lpthread"
-               "-ldl -lm")]
+               "-ldl -lm -luuid -lpthread"
+               "-ldl -lm -luuid")]
     [macosx "-liconv"]
     [windows "rpcrt4.lib ole32.lib advapi32.lib User32.lib"]))
 
