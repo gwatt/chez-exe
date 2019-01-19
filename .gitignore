@@ -1,9 +1,10 @@
-boot
 config.ss
 make.in
 tools.ini
 *.generated.c
 *.a
+*.boot
+*_boot.*
 *.chez
 *.o
 *.s

@@ -3,6 +3,9 @@
 
 -include make.in
 
+fcs = full-chez.boot
+pcs = petite-chez.boot
+
 incdir ?= $(bootpath)
 libdir ?= $(bootpath)
 
@@ -13,30 +16,36 @@ scheme ?= scheme
 
 runscheme = "$(scheme)" -b "$(bootpath)/petite.boot" -b "$(bootpath)/scheme.boot"
 
-compile-chez-program: compile-chez-program.ss chez.a $(wildcard config.ss)
-	$(scheme) -b ./boot --compile-imported-libraries --program $< --chez-lib-dir . $<
+compile-chez-program: compile-chez-program.ss full-chez.a petite-chez.a $(wildcard config.ss)
+	$(runscheme) --compile-imported-libraries --program $< --full-chez --chez-lib-dir . $<
 
-chez.a: embed_target.o stubs.o boot.o $(kernel)
+%.a: embed_target.o stubs.o %_boot.o $(kernel)
 	ar rcs $@ $^
+
+stubs.o: stubs.c
+	$(CC) -c -o $@ $<
 
 %.o: %.c
 	$(CC) -c -o $@ $< -I$(incdir) -Wall -Wextra -pedantic $(CFLAGS)
 
-boot.o: boot.generated.c
+%_boot.o: %_boot.c
 	$(CC) -o $@ -c $(CFLAGS) $<
 
-boot.generated.c: boot
-	$(runscheme) --script build-included-binary-file.ss "$@" chezschemebootfile boot
+%_boot.c: %.boot
+	$(runscheme) --script build-included-binary-file.ss "$@" chezschemebootfile $^
 
-boot: $(psboot) $(csboot)
-	$(runscheme) --script make-boot-file.ss "$(bootpath)"
+$(fcs): $(psboot) $(csboot)
+	$(runscheme) --script make-boot-file.ss $@ $^
+
+$(pcs): $(psboot)
+	$(runscheme) --script make-boot-file.ss $@ $^
 
 install: compile-chez-program
 	install -m 755 compile-chez-program $(DESTDIR)$(installbindir)/
-	install -m 644 chez.a $(DESTDIR)$(installlibdir)/
+	install -m 644 full-chez.a petite-chez.a $(DESTDIR)$(installlibdir)/
 
 clean:
-	rm -f compile-chez-program boot chez.a *.generated.c *.s *.o *.chez *.so *.wpo
+	rm -f compile-chez-program *.a *_boot.* *.s *.o *.chez *.so *.wpo *.boot
 
 cleanconfig:
 	rm -f config.ss make.in

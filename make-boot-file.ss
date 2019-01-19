@@ -1,7 +1,5 @@
 
-(define bootpath (car (command-line-arguments)))
-(define sep (string (directory-separator)))
+(define output-file (car (command-line-arguments)))
+(define bootfiles (cdr (command-line-arguments)))
 
-(make-boot-file "boot" '()
-  (string-append bootpath sep "petite.boot")
-  (string-append bootpath sep "scheme.boot"))
+(apply make-boot-file output-file '() bootfiles)

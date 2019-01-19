@@ -1,35 +1,51 @@
 
-EXE = compile-chez-program.exe
-GMAIN = gui_main.obj
-CMAIN = console_main.obj
+exe = compile-chez-program.exe
+gmain = gui_main.obj
+cmain = console_main.obj
 
-all: $(EXE) $(GMAIN) $(CMAIN)
+fcs = full-chez.boot
+pcs = petite-chez.boot
 
-$(EXE): compile-chez-program.ss $(CMAIN) chez.lib
-	"$(scheme)" --program compile-chez-program.ss --chez-lib-dir . compile-chez-program.ss
+all: $(exe) $(gmain) $(cmain) full-chez.lib petite-chez.lib
 
-chez.lib: embed_target_windows.obj boot.generated.obj "$(bootpath)/csv*md.lib"
+$(exe): compile-chez-program.ss $(cmain) full-chez.lib petite-chez.lib
+	"$(scheme)" --program compile-chez-program.ss --full-chez --chez-lib-dir . compile-chez-program.ss
+
+boot_generated.obj.lib: embed_target_windows.obj "$(bootpath)/csv*md.lib"
 	lib /out:$@ $**
 
 .c.obj:
 	cl /nologo /Wall /I"$(bootpath)" /DSCHEME_STATIC /DWIN32_LEAN_AND_MEAN /MD /c $**
 
-boot:
-	"$(scheme)" --script make-boot-file.ss "$(bootpath)"
+full-chez.lib: full-chez_boot.obj embed_target_windows.obj "$(bootpath)\csv*md.lib"
+	lib /nologo /out:$@ $**
 
-boot.generated.c: boot
-	"$(scheme)" --script build-included-binary-file.ss boot.generated.c chezschemebootfile boot
+petite-chez.lib: petite-chez_boot.obj embed_target_windows.obj "$(bootpath)\csv*md.lib"
+	lib /nologo /out:$@ $**
+
+full-chez_boot.c: full-chez.boot
+	"$(scheme)" --script build-included-binary-file.ss $@ chezschemebootfile $**
+
+petite-chez_boot.c: petite-chez.boot
+	"$(scheme)" --script build-included-binary-file.ss $@ chezschemebootfile $**
+
+full-chez.boot:
+	"$(scheme)" --script make-boot-file.ss $@ "$(bootpath)/petite.boot" "$(bootpath)/scheme.boot"
+
+petite-chez.boot:
+	"$(scheme)" --script make-boot-file.ss $@ "$(bootpath)/petite.boot"
 
 install: all
 	-mkdir $(installlibdir)
 	-mkdir $(installbindir)
-	copy /y $(EXE) $(installbindir)
-	copy /y $(GMAIN) $(installlibdir)
-	copy /y $(CMAIN) $(installlibdir)
-	copy /y chez.lib $(installlibdir)
+	copy /y $(exe) $(installbindir)
+	copy /y $(gmain) $(installlibdir)
+	copy /y $(cmain) $(installlibdir)
+	copy /y full-chez.lib $(installlibdir)
+	copy /y petite-chez.lib $(installlibdir)
 
 clean:
-	-del /F boot *.chez *.exe *.obj *.lib *.generated.c *.wpo *.so *.exp
+	-del /F *.boot *_boot.c *.chez *.exe *.obj *.lib *.generated.c *.wpo *.so *.exp
 
 cleanconfig:
 	-del /F config.ss tools.ini

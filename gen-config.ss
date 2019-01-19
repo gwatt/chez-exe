@@ -13,6 +13,22 @@
 (define bindir (make-parameter #f))
 
 (param-args (command-line-arguments)
+  [#f "--help" (lambda ()
+                 (printlns
+                   "gen-config.ss"
+                   " options:"
+                   "  --scheme: path to scheme exe"
+                   "  --bootpath: path to boot files"
+                   "  --prefix: root path for chez-exe installation"
+                   "  --libdir: path to location for install of chez-exe libraries"
+                   "  --bindir: path to location for install of chez-exe binaries"
+                   ""
+                   " On UNIX-like machines, bindir and libdir default to"
+                   " $prefix/bin and $prefix/lib respectively, and the default"
+                   " for prefix is /usr/local"
+                   " On Windows, bindir and libdir both default to $prefix, and the"
+                   " default for prefix is %LOCALAPPDATA%\\chez-exe")
+                 (exit))]
   ["--scheme" scheme]
   ["--bootpath" bootpath]
   ["--prefix" prefixdir]

@@ -3,6 +3,7 @@
 (include "utils.ss")
 
 (define chez-lib-dir (make-parameter "."))
+(define full-chez (make-parameter #f))
 (define gui (make-parameter #f))
 
 (meta-cond
@@ -24,15 +25,19 @@
     ["--optimize-level" (lambda (level)
                           (optimize-level (string->number level)))]
     ["--chez-lib-dir" chez-lib-dir]
+    [#t "--full-chez" full-chez]
     ;;; Windows only
     [#t "--gui" gui]))
 
 (define chez-file
-  (path-append (chez-lib-dir)
-    (case (os-name)
-      [windows "chez.lib"]
-      [else "chez.a"])))
-
+  (let* ([basename (if (full-chez)
+                       "full-chez"
+                       "petite-chez")]
+         [ext (if (eq? (os-name) 'windows)
+                  "lib"
+                  "a")]
+         [libname (string-append basename "." ext)])
+    (path-append (chez-lib-dir) libname)))
 
 (when (null? args)
   (parameterize ([current-output-port (current-error-port)])
@@ -40,7 +45,7 @@
       "Usage:"
       "compile-chez-program [--libdirs dirs] [--libexts exts] [--srcdirs dirs]
           [--optimize-level 0|1|2|3] [--chez-lib-dir /path/to/chez.a]
-          <scheme-program.ss> [c-compiler-args ...]"
+          [--full-chez] <scheme-program.ss> [c-compiler-args ...]"
       ""
       "This will compile a given scheme file and all of its imported libraries"
       "as with (compile-whole-program wpo-file output-file)"

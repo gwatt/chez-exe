@@ -42,7 +42,7 @@
   (let loop ([i 0] [start 0])
     (cond
       [(<= (string-length str) i) (list (substring str start i))]
-      [(char=? (string-ref str i) #\:)
+      [(char=? (string-ref str i) ch)
        (cons (substring str start i) (loop (+ i 1) (+ i 1)))]
       [else (loop (+ i 1) start)])))
 
@@ -68,9 +68,5 @@
                    [else args])))])))
 
 (define (printlns . args)
-  (for-each (lambda (x)
-              (display x)
-              (newline))
-    args))
-
+  (format #t "~{~a~n~}" args))
 
