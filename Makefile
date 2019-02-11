@@ -40,6 +40,10 @@ $(fcs): $(psboot) $(csboot)
 $(pcs): $(psboot)
 	$(runscheme) --script make-boot-file.ss $@ $^
 
+$(psboot) $(csboot) $(kernel):
+	@echo Unable to find "$@". Try running gen-config.ss to set dependency paths
+	@false
+
 install: compile-chez-program
 	install -m 755 compile-chez-program $(DESTDIR)$(installbindir)/
 	install -m 644 full-chez.a petite-chez.a $(DESTDIR)$(installlibdir)/
