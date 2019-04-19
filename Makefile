@@ -45,7 +45,9 @@ $(psboot) $(csboot) $(kernel):
 	@false
 
 install: compile-chez-program
+	install -d $(DESTDIR)$(installbindir)/
 	install -m 755 compile-chez-program $(DESTDIR)$(installbindir)/
+	install -d $(DESTDIR)$(installlibdir)/
 	install -m 644 full-chez.a petite-chez.a $(DESTDIR)$(installlibdir)/
 
 clean:
