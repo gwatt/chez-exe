@@ -3,6 +3,7 @@
 (include "utils.ss")
 
 (define chez-lib-dir (make-parameter "."))
+(define static-compiler-args (make-parameter '()))
 (define full-chez (make-parameter #f))
 (define gui (make-parameter #f))
 
@@ -59,7 +60,7 @@
 (generate-wpo-files #t)
 
 (define scheme-file (car args))
-(define compiler-args (cdr args))
+(define compiler-args (append (static-compiler-args) (cdr args)))
 
 (define mbits (format #f "-m~a" (machine-bits)))
 
