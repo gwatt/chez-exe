@@ -9,7 +9,7 @@ const char *program_name(void) {
 }
 
 void custom_init(void) {
-	Sregister_symbol("program_name", program_name);
+	Sregister_symbol("program_name", (void*)program_name);
 }
 
 int run_program(int argc, const char **argv, const char *bootfilename, const char *schemefilename) {
