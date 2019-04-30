@@ -8,11 +8,7 @@
 #include <unistd.h>
 
 #include <scheme.h>
-
-extern const char chezschemebootfile;
-extern const unsigned chezschemebootfile_size;
-extern const char scheme_program;
-extern const unsigned scheme_program_size;
+#include "setup.h"
 
 char bootfilename[] = "/tmp/chezschemebootXXXXXX";
 char schemefilename[] = "/tmp/schemeprogramXXXXXX";
@@ -46,10 +42,7 @@ int main(int argc, const char **argv) {
 	schemefd = maketempfile(schemefilename, &scheme_program, scheme_program_size);
 	cleanup_schemefile = schemefilename;
 
-	Sscheme_init(0);
-	Sregister_boot_file(bootfilename);
-	Sbuild_heap(0, 0);
-	ret = Sscheme_program(schemefilename, argc, argv);
+	ret = run_program(argc, argv, bootfilename, schemefilename);
 
 	close(bootfd);
 	close(schemefd);

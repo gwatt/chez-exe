@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <scheme.h>
+#include "setup.h"
 
 extern const unsigned char chezschemebootfile;
 extern const unsigned chezschemebootfile_size;
@@ -58,8 +59,5 @@ int scheme_main(int argc, char *argv[]) {
 	maketempfile("s", schemefilename, &scheme_program, scheme_program_size);
 	cleanup_schemefile = schemefilename;
 
-	Sscheme_init(0);
-	Sregister_boot_file(bootfilename);
-	Sbuild_heap(0, 0);
-	return Sscheme_program(schemefilename, argc, argv);
+	return run_program(argc, argv, bootfilename, schemefilename);
 }
