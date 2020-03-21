@@ -1,24 +1,23 @@
 #!/bin/bash
 #
 # Needed libs:
-#   libuuid-devel ncurses-devel
+#   libuuid-devel zlib-devel
+#
+# This script assumes that a stable version of ChezScheme has been
+# installed with the distro's package manager.
 
-arch=ta6le
-procs=5
-instdirprefix=/usr/local
+# Get ChezScheme's architecture.
+arch=$(echo '(machine-type)' | scheme --quiet)
+# Get ChezScheme's version.
+version=$(scheme --version 2>&1)
 
-git submodule init
-git submodule update
+# Generate the Makefile for generating the chez-exe binary and libraries.
+./gen-config.ss --prefix /usr --scheme /usr/bin/scheme \
+  --bootpath /usr/lib/csv$version/$arch -lz
 
-cd ChezScheme
-./configure --disable-x11 --threads
-make -j$procs
-cd ..
-scheme --script gen-config.ss --prefix "$instdirprefix" \
-    --scheme "$(pwd)/ChezScheme/$arch/bin/scheme" \
-    --bootpath "$(pwd)/ChezScheme/$arch/boot/$arch"
-make -j$procs
+# Compile chez-exe (a.k.a chez-compile-program).
+make
 
-echo "Installation prefix set to \"$instdirprefix\""
-echo "Issue a 'sudo make install' to install the program."
-echo "Issue a 'sudo make uninstall' to uninstall the program."
+# Print useful messages.
+echo "[MESSAGE] sudo make install -> Install the program to /usr/bin"
+echo "[MESSAGE] sudo make uninstall -> Remove the program from the system."
