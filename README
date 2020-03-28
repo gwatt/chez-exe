@@ -5,20 +5,6 @@ a complete ChezScheme system and contain a scheme program.
 This works by embedding the ChezScheme bootfiles and a scheme program
 into the executable.
 
-This fork includes a submodule for the ChezScheme github repo to make
-building painless as possible.
-
-Two scripts are presented:
-./build-stable
-    This builds chez-exe with the system libraries instead of the
-    ChezScheme submodule. An already installed version of the ChezScheme
-    compiler must be installed for this to work.
-
-./build
-    This build chez-exe with the ChezScheme source code taken from
-    the master repo (be careful with occasional bugs that you MAY or MAY
-    NOT encounter).
-
 Read the two scripts's source code above and modify them accordingly
 to your needs :)
 
@@ -43,6 +29,9 @@ Once ChezScheme is ready, you can build chez-exe like so:
         [--libdir libdir] [--bootpath bootpath] [--scheme scheme] \
         [...]
     make [bootpath=...] [libpath=...] [incdir=...] [scheme=...]
+
+NOTE: make is automatically invoked by the `gen-config.ss` script to automate
+building of the program.
 
 Running gen-config.ss will create two files:
 config.ss and make.in on unix, or config.ss and tools.ini on Windows.
