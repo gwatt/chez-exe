@@ -80,3 +80,5 @@
          (format "installlibdir = ~a" (libdir))
          (format "installbindir = ~a" (bindir))))
      '(replace))])
+
+(system "make")
