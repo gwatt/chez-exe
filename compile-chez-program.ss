@@ -50,7 +50,7 @@
       ""
       "This will compile a given scheme file and all of its imported libraries"
       "as with (compile-whole-program wpo-file output-file)"
-      "see http://cisco.github.io/ChezScheme/csug9.5/system.html#./system:s68"
+      "see https://cisco.github.io/ChezScheme/csug9.5/system.html#./system:s77"
       "for documentation on compile-whole-program"
       ""
       "Any extra arguments will be passed to the c compiler"))
