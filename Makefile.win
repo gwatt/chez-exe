@@ -44,6 +44,13 @@ install: all
 	copy /y full-chez.lib $(installlibdir)
 	copy /y petite-chez.lib $(installlibdir)
 
+uninstall:
+	-del $(installbindir)\$(exe)
+	-del $(installlibdir)\$(gmain)
+	-del $(installlibdir)\$(cmain)
+	-del $(installlibdir)\full-chez.lib
+	-del $(installlibdir)\petite-chez.lib
+
 clean:
 	-del /F *.boot *_boot.c *.chez *.exe *.obj *.lib *.generated.c *.wpo *.so *.exp
 
