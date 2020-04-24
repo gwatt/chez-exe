@@ -29,10 +29,10 @@ full-chez_boot.c: full-chez.boot
 petite-chez_boot.c: petite-chez.boot
 	"$(scheme)" --script build-included-binary-file.ss $@ chezschemebootfile $**
 
-full-chez.boot: "$(bootpath)/petite.boot" "$(bootpath)/scheme.boot" custom-boot.ss
+full-chez.boot: "$(bootpath)\petite.boot" "$(bootpath)\scheme.boot" custom-boot.ss
 	"$(scheme)" --script make-boot-file.ss $@ $**
 
-petite-chez.boot: "$(bootpath)/petite.boot" custom-boot.ss
+petite-chez.boot: "$(bootpath)\petite.boot" custom-boot.ss
 	"$(scheme)" --script make-boot-file.ss $@ $**
 
 install: all
