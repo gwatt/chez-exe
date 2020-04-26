@@ -24,11 +24,6 @@
     fst
     rest))
 
-(define (chez-lib-name)
-  (case (os-name)
-    [windows "chez.lib"]
-    [else "chez.a"]))
-
 (define (build-included-binary-file output-name symbol-name include-file)
   (with-output-to-file output-name
     (lambda ()
