@@ -52,7 +52,7 @@ install: compile-chez-program
 	install -m 644 full-chez.a petite-chez.a $(DESTDIR)$(installlibdir)/
 
 clean:
-	rm -f compile-chez-program *.a *_boot.* *.s *.o *.chez *.so *.wpo *.boot
+	rm -f compile-chez-program *.a *.generated.* *.s *.o *.chez *.so *.wpo *.boot
 
 cleanconfig:
 	rm -f config.ss make.in
