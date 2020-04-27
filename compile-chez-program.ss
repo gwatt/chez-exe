@@ -16,8 +16,31 @@
   (if libdirs (library-directories libdirs))
   (if libexts (library-extensions libexts)))
 
+(define print-help-and-quit
+  (case-lambda
+    [() (print-help-and-quit 0)]
+    [(code)
+     (printlns
+       "Usage:"
+       "compile-chez-program [--libdirs dirs] [--libexts exts] [--srcdirs dirs]"
+       "    [--optimize-level 0|1|2|3] [--chez-lib-dir /path/to/chez.a]"
+       "    [--full-chez] <scheme-program.ss> [c-compiler-args ...]"
+       ""
+       "This will compile a given scheme file and all of its imported libraries"
+       "as with (compile-whole-program wpo-file output-file)"
+       "see https://cisco.github.io/ChezScheme/csug9.5/system.html#./system:s77"
+       "for documentation on compile-whole-program."
+       ""
+       "This instance of compile-chez-program was built with:"
+       (string-append "    " (scheme-version))
+       ""
+       "Any extra arguments will be passed to the c compiler"
+       "")
+     (exit)]))
+
 (define args
   (param-args (command-line-arguments)
+    [#f "--help" print-help-and-quit]
     ["--libdirs" library-directories]
     ["--libexts" library-extensions]
     ["--srcdirs" (lambda (dirs)
@@ -42,19 +65,7 @@
 
 (when (null? args)
   (parameterize ([current-output-port (current-error-port)])
-    (printlns
-      "Usage:"
-      "compile-chez-program [--libdirs dirs] [--libexts exts] [--srcdirs dirs]
-          [--optimize-level 0|1|2|3] [--chez-lib-dir /path/to/chez.a]
-          [--full-chez] <scheme-program.ss> [c-compiler-args ...]"
-      ""
-      "This will compile a given scheme file and all of its imported libraries"
-      "as with (compile-whole-program wpo-file output-file)"
-      "see https://cisco.github.io/ChezScheme/csug9.5/system.html#./system:s77"
-      "for documentation on compile-whole-program"
-      ""
-      "Any extra arguments will be passed to the c compiler"))
-  (exit 1))
+    (print-help-and-quit)))
 
 (compile-imported-libraries #t)
 (generate-wpo-files #t)
