@@ -8,7 +8,7 @@ into the executable.
 Chez-exe embeds the ChezScheme boot files and a compiled scheme program as binary data in a C source file.
 The scheme program is compiled with [`compile-whole-program`](http://cisco.github.io/ChezScheme/csug9.5/system.html#./system:s77).
 As such, the scheme program must be valid [R6RS top-level program](http://www.r6rs.org/final/html/r6rs/r6rs-Z-H-4.html#node_sec_1.13)
-and any imported lbiraries should be available in source form or have already been compiled
+and any imported libraries should be available in source form or have already been compiled
 with the same version of ChezScheme and have wpo files generated for the libraries.
 Any scheme files accessed with `(load)` and libraries which are not available in source form or do not have wpo files
 will not be embedded and will need to be distributed with the generated program for it to work properly.
@@ -109,7 +109,7 @@ The default location is whatever was given as the `--libdir` argument for `gen-c
 `--full-chez` will cause `compile-chez-program` to generate a program that links against `full-chez.a`.
 This means the generated program will have access to the compiler and FFI and be able to compile new code.
 The default is to link against `petite-chez.a` which will not include the compiler or ffi.
-NOTE: Your code will still be compiled and the FFI will be available when building your program aginst `petite-chez.a`.
+NOTE: Your code will still be compiled and the FFI will be available when building your program against `petite-chez.a`.
 
 `compile-chez-program` assumes that the first unknown argument is the filename to compile.
 Any further arguments are passed to the C compiler.
