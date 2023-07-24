@@ -25,7 +25,7 @@
             --prefix $out \
             --bindir $out/bin \
             --libdir $out/lib \
-            --bootpath ${pkgs.chez}/lib/csv9.5.8/ta6le \
+            --bootpath ${pkgs.chez}/lib/csv${pkgs.chez.version}/ta6le \
             --scheme scheme
           '';
         };
