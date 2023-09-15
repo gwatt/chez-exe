@@ -7,6 +7,12 @@
     utils.lib.eachDefaultSystem (
       system: let
         pkgs = nixpkgs.legacyPackages.${system};
+        bootpath = if system == "x86_64-darwin"
+                   then "${pkgs.chez}/lib/csv${pkgs.chez.version}/ta6osx"
+                   else "${pkgs.chez}/lib/csv${pkgs.chez.version}/ta6le";
+        platformSpecificInputs = if system == "x86_64-darwin"
+                                 then [ pkgs.darwin.libiconv ]
+                                 else [ pkgs.libuuid ];
       in {
 
         packages.default = pkgs.stdenv.mkDerivation {
@@ -16,8 +22,7 @@
 
           buildInputs = with pkgs; [
             chez
-            libuuid
-          ];
+          ] ++ platformSpecificInputs;
 
           buildPhase = ''
             mkdir -p $out/{bin,lib}
@@ -25,7 +30,7 @@
             --prefix $out \
             --bindir $out/bin \
             --libdir $out/lib \
-            --bootpath ${pkgs.chez}/lib/csv${pkgs.chez.version}/ta6le \
+            --bootpath ${bootpath} \
             --scheme scheme
           '';
         };
