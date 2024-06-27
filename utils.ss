@@ -17,6 +17,13 @@
     [windows #\;]
     [else #\:]))
 
+(define (path-list-append fst . rest)
+  (fold-left
+    (lambda (path str)
+      (string-append path (string (path-separator)) str))
+    fst
+    rest))
+
 (define (path-append fst . rest)
   (fold-left
     (lambda (path str)
@@ -40,6 +47,15 @@
       [(char=? (string-ref str i) ch)
        (cons (substring str start i) (loop (+ i 1) (+ i 1)))]
       [else (loop (+ i 1) start)])))
+
+(define (locate-file name dirs)
+  (if (pair? dirs)
+      (let* ((dir (car dirs))
+             (path (path-append dir name)))
+        (if (file-exists? path)
+            path
+            (locate-file name (cdr dirs))))
+      #f))
 
 (define-syntax param-args
   (lambda (x)

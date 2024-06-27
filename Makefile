@@ -12,19 +12,15 @@ libdir ?= $(bootpath)
 psboot = $(bootpath)/petite.boot
 csboot = $(bootpath)/scheme.boot
 custom_boot = custom-boot.ss
-kernel = $(libdir)/kernel.o
 scheme ?= scheme
 
 runscheme = "$(scheme)" -b "$(bootpath)/petite.boot" -b "$(bootpath)/scheme.boot"
 
 compile-chez-program: compile-chez-program.ss full-chez.a petite-chez.a $(wildcard config.ss)
-	$(runscheme) --compile-imported-libraries --program $< --full-chez --chez-lib-dir . $<
+	$(runscheme) --compile-imported-libraries --program $< --full-chez --chez-lib-dirs $(chez_lib_dirs) $<
 
-%.a: embed_target.o setup.o stubs.o %_boot.o $(kernel)
+%.a: embed_target.o setup.o %_boot.o $(kernel)
 	ar rcs $@ $^
-
-stubs.o: stubs.c
-	$(CC) -c -o $@ $<
 
 %.o: %.c
 	$(CC) -c -o $@ $< -I$(incdir) -Wall -Wextra -pedantic $(CFLAGS)
