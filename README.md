@@ -83,23 +83,28 @@ and `petite-chez.a` is a static library containing only the Petite ChezScheme sy
 
 #### RUNNING:
 
-    compile-chez-program [--libdirs ...] [--libexts ...] [--srcdirs ...]
-        [--chez-lib-dir /path/to/chezlib] [--optimize-level 0|1|2|3]
-        [--full-chez]
-        program-file.ss [...]
+    compile-chez-program [options ...] <scheme-program.ss> [c-compiler-args ...]
 
 compile-chez-program understands `CHEZSCHEMELIBDIRS` and `CHEZSCHEMELIBEXTS` in
 the same way that the ChezScheme executables understand them.
 compile-chez-program also recognizes the following command line arguments:
 
-* `--libdirs`
-* `--libexts`
-* `--srcdirs`
-* `--optimize-level`
-* `--chez-lib-dir`
+* `--libdirs dirs`
+* `--libexts exts`
+* `--srcdirs dirs`
+* `--chez-lib-dir /path/to/chez.a`
+* `--optimize-level 0|1|2|3`
+* `--debug-level 0|1|2|3`
+* `--commonization-level 0|1|...|9`
+* `--compile-profile source|block`
 * `--full-chez`
+* `--compile-all-expressions`
+* `--undefined-variable-warnings`
+* `--generate-covin-files`
 
-`--libdirs`, `--libexts`, and `--optimize-level` all behave exactly as for ChezScheme.
+`--libdirs`, `--libexts`, `--optimize-level`, `--debug-level`, `--commonization-level`, `--compile-profile`,
+`--generate-covin-files` and `--undefined-variable-warnings` all behave exactly as for ChezScheme.
+
 `--srcdirs` alters the [`source-directories`](http://cisco.github.io/ChezScheme/csug9.5/system.html#./system:s102)
 parameter in exactly the same way that `--libdirs` and `--libexts` alter their respective parameters.
 
@@ -110,6 +115,8 @@ The default location is whatever was given as the `--libdir` argument for `gen-c
 This means the generated program will have access to the compiler and FFI and be able to compile new code.
 The default is to link against `petite-chez.a` which will not include the compiler or ffi.
 NOTE: Your code will still be compiled and the FFI will be available when building your program against `petite-chez.a`.
+
+`--compile-all-expressions` sets the ChezScheme parameter `compile-interpret-simple` to `#f`.
 
 `compile-chez-program` assumes that the first unknown argument is the filename to compile.
 Any further arguments are passed to the C compiler.
