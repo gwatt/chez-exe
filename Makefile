@@ -12,7 +12,15 @@ libdir ?= $(bootpath)
 psboot = $(bootpath)/petite.boot
 csboot = $(bootpath)/scheme.boot
 custom_boot = custom-boot.ss
-kernel = $(libdir)/kernel.o
+
+SCHEME_MAJOR_VERSION := $(shell scheme --version | cut -d. -f1)
+IS_OLD_VERSION := $(shell [ $(SCHEME_MAJOR_VERSION) -lt 10 ] && echo "true")
+
+ifeq ($(IS_OLD_VERSION),true)
+    kernel = $(libdir)/kernel.o
+else
+    kernel = $(libdir)/libkernel.a
+endif
 scheme ?= scheme
 
 runscheme = "$(scheme)" -b "$(bootpath)/petite.boot" -b "$(bootpath)/scheme.boot"

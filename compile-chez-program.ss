@@ -3,6 +3,7 @@
 (include "utils.ss")
 
 (define chez-lib-dir (make-parameter "."))
+(define lib-path (make-parameter ""))
 (define static-compiler-args (make-parameter '()))
 (define full-chez (make-parameter #f))
 (define gui (make-parameter #f))
@@ -108,7 +109,8 @@
   [windows
    (system (format "cl /nologo /MD /Fe:~a ~a ~a ~a ~a ~{ ~a~}" exe-name win-main solibs chez-file embed-file compiler-args))]
   [else
-   (system (format "cc -o ~a ~a ~a ~a ~a ~{ ~s~}" exe-name chez-file embed-file mbits solibs compiler-args))])
+   (system (format "cc -o ~a ~a ~a ~a ~a ~{ ~s~} -L~a -lkernel -lz -llz4 -lncurses -ltinfo" exe-name chez-file embed-file mbits solibs compiler-args (lib-path)))])
 
+ 
 (display basename)
 (newline)

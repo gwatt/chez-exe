@@ -55,6 +55,7 @@
 (with-output-to-file "config.ss"
   (lambda ()
     (write `(chez-lib-dir ,(libdir)))
+    (write `(lib-path ,(bootpath)))
     (write `(static-compiler-args ',args)))
   '(replace))
 
